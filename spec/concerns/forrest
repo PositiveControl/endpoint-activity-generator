@@ -1,0 +1,3 @@
+#!/usr/bin/env ruby
+Process.setproctitle("forrest")
+puts "Look ma!  I'm running!"
