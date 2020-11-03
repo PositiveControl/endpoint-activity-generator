@@ -10,7 +10,7 @@ RSpec.describe EAG do
 
   context 'starting processes' do
     it 'should start a process given a path' do
-      expect { EAG.start_process('./spec/concerns/forrest') }
+      expect { EAG.new('./spec/concerns/forrest').start_process }
         .to output(a_string_including("Look ma!  I'm running!"))
           .to_stdout_from_any_process
     end
@@ -19,7 +19,7 @@ RSpec.describe EAG do
   context 'logging activity' do
     it 'should log user who started the process' do
       username = Etc.getlogin
-      EAG.start_process('./spec/concerns/forrest')
+      EAG.new('./spec/concerns/forrest').start_process
       logs = File.read('./logs/activity.csv')
 
       expect(logs.include?(username)).to be_truthy
