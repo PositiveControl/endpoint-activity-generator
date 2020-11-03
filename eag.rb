@@ -32,6 +32,13 @@ class EAG
     execute_command
   end
 
+  def delete_file
+    @action = "delete"
+    @file_path = File.expand_path(@path)
+    @command_line = "rm #{@file_path}"
+    execute_command
+  end
+
   private
 
   def execute_command

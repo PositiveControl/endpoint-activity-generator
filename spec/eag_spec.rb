@@ -41,6 +41,12 @@ RSpec.describe EAG do
 
       expect(File.read(nefarious_path)).to include("You are being hacked!")
     end
+
+    it 'deletes file at given path' do
+      EAG.new(nefarious_path).delete_file
+
+      expect(File.exist?(nefarious_path)).to be_falsey
+    end
   end
 
   context 'logging process start' do
@@ -76,8 +82,20 @@ RSpec.describe EAG do
       expect(logs.include?("nefarious.txt")).to be_truthy
     end
 
-    it 'logs activity descriptor' do
+    it 'logs create activity descriptor' do
       expect(logs.include?("action: create")).to be_truthy
+    end
+
+    it 'logs update activity descriptor' do
+      EAG.new(nefarious_path).update_file("You are being hacked!")
+
+      expect(logs.include?("action: update")).to be_truthy
+    end
+
+    it 'logs delete activity descriptor' do
+      EAG.new(nefarious_path).delete_file
+
+      expect(logs.include?("action: delete")).to be_truthy
     end
   end
 end
