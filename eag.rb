@@ -25,6 +25,13 @@ class EAG
     execute_command
   end
 
+  def update_file(content)
+    @action = "update"
+    @file_path = File.expand_path(@path)
+    @command_line = "echo #{content} >> #{@file_path}"
+    execute_command
+  end
+
   private
 
   def execute_command
