@@ -1,5 +1,6 @@
 require 'etc'
 require 'open3'
+require './concerns/constants'
 require './concerns/activity_logger'
 
 class EAG
@@ -15,27 +16,27 @@ class EAG
   end
 
   def start_process
-    @action = "start_process"
+    @action = START_PROCESS
     @command_line = @path
     execute_command
   end
 
   def create_file(name, extension)
-    @action = "create"
+    @action = CREATE
     @file_path = File.expand_path(@path + name + extension)
     @command_line = "touch #{@file_path}"
     execute_command
   end
 
   def update_file(content)
-    @action = "update"
+    @action = UPDATE
     @file_path = File.expand_path(@path)
     @command_line = "echo #{content} >> #{@file_path}"
     execute_command
   end
 
   def delete_file
-    @action = "delete"
+    @action = DELETE
     @file_path = File.expand_path(@path)
     @command_line = "rm #{@file_path}"
     execute_command

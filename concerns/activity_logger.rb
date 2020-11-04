@@ -1,11 +1,12 @@
 require 'logger'
+require './concerns/constants'
 
 module ActivityLogger
   def log_activity
-    file = File.open('logs/activity.csv', File::WRONLY | File::APPEND | File::CREAT)
+    file = File.open(LOGFILE_PATH, File::WRONLY | File::APPEND | File::CREAT)
     logger = Logger.new(file)
     logger.formatter = proc do |_, datetime, _, msg|
-      if file_operations.include?(@action)
+      if FILE_OPS.include?(@action)
         # process_name - do we want the script's process name, or process_name of the executed command?
         "timestamp: #{datetime.to_s},action: #{@action}, file_path: #{@file_path},user: #{@user},process_name: #{$PROGRAM_NAME},command_line: #{@command_line},pid: #{@pid}\n"
       else
@@ -19,10 +20,5 @@ module ActivityLogger
   def process_name
     # "/" wont work on Windows
     @path.split("/").last
-  end
-
-  def file_operations
-    # set as constants
-    ["create", "update", "delete"]
   end
 end

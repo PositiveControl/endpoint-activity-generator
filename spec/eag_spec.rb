@@ -1,10 +1,11 @@
+require './concerns/constants'
 require './eag.rb'
 require 'csv'
 require 'pry'
 
 RSpec.describe EAG do
   let(:username) { Etc.getlogin }
-  let(:logs) { File.read('./logs/activity.csv') }
+  let(:logs) { File.read("./#{LOGFILE_PATH}") }
   let(:forrest_path) { './spec/concerns/forrest' }
   let(:nefarious_path) { './spec/concerns/nefarious.txt' }
 
@@ -83,19 +84,19 @@ RSpec.describe EAG do
     end
 
     it 'logs create activity descriptor' do
-      expect(logs.include?("action: create")).to be_truthy
+      expect(logs.include?("action: #{CREATE}")).to be_truthy
     end
 
     it 'logs update activity descriptor' do
       EAG.new(nefarious_path).update_file("You are being hacked!")
 
-      expect(logs.include?("action: update")).to be_truthy
+      expect(logs.include?("action: #{UPDATE}")).to be_truthy
     end
 
     it 'logs delete activity descriptor' do
       EAG.new(nefarious_path).delete_file
 
-      expect(logs.include?("action: delete")).to be_truthy
+      expect(logs.include?("action: #{DELETE}")).to be_truthy
     end
   end
 end
