@@ -1,7 +1,7 @@
 require 'etc'
 require 'open3'
-require './concerns/constants'
-require './concerns/activity_logger'
+require './lib/constants'
+require './lib/activity_logger'
 
 class EAG
   include ActivityLogger
@@ -9,10 +9,7 @@ class EAG
   def initialize(path)
     @path = path
     @user = Etc.getlogin
-    @pid = nil
-    @action = nil
-    @command_line = nil
-    @file_path = nil
+    @pid, @action, @command_line, @file_path, @stdout = nil
   end
 
   def start_process
@@ -42,14 +39,22 @@ class EAG
     execute_command
   end
 
+  def connect
+    @action = NETWORK
+    @command_line = "curl --local-port 3001 #{@path} -v > #{NETWORKLOG_PATH} 2>&1"
+    execute_command
+  end
+
   private
 
   def execute_command
     stdin, stdout, thread = Open3.popen2(@command_line)
+    @stdout = stdout.read
+    # pid of executed process, NOT this program that executed it
     @pid = thread.pid
     log_activity
     # puts is only for spec expectation
-    puts stdout.read
+    puts @stdout
     [stdin, stdout].each(&:close)
   end
 end

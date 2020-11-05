@@ -1,7 +1,5 @@
-require './concerns/constants'
+require './lib/constants'
 require './eag.rb'
-require 'csv'
-require 'pry'
 
 RSpec.describe EAG do
   let(:username) { Etc.getlogin }
@@ -23,10 +21,10 @@ RSpec.describe EAG do
   end
 
   context 'file operations' do
-    before(:each) do
+    before(:all) do
       EAG.new('./spec/concerns/').create_file('nefarious','.txt')
     end
-    after do
+    after(:all) do
       # cleanup created file
       # sleep to allow expectation to finish before after block is called
       sleep(0.1)
@@ -70,11 +68,6 @@ RSpec.describe EAG do
 
     let(:full_nefarious_path) { File.expand_path('./spec/concerns/nefarious.txt') }
 
-    xit 'logs process name' do
-      # process of script, or process of executed command line?
-      expect(logs.include?("file_create")).to be_truthy
-    end
-
     it 'logs full file path' do
       expect(logs.include?(full_nefarious_path)).to be_truthy
     end
@@ -97,6 +90,36 @@ RSpec.describe EAG do
       EAG.new(nefarious_path).delete_file
 
       expect(logs.include?("action: #{DELETE}")).to be_truthy
+    end
+  end
+
+  context 'logging network activity' do
+    before(:all) do
+      EAG.new("https://www.google.com").connect
+    end
+
+    it 'logs the destination address and port' do
+      expect(logs.include?("www.google.com:443")).to be_truthy
+    end
+
+    it 'logs the source address and port' do
+      expect(logs.include?("127.0.0.1:3001")).to be_truthy
+    end
+
+    it 'logs the protocol' do
+      expect(logs.include?("TCP")).to be_truthy
+    end
+
+    it 'logs the total data sent' do
+      # hacky way of ensuring data sent is present
+      # because amount changes with every connection
+      data_sent = File
+        .foreach("./#{LOGFILE_PATH}")
+        .grep(/\d{2,} bytes/)
+        .take(1)
+        .first
+
+      expect(data_sent).to be_truthy
     end
   end
 end

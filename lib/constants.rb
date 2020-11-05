@@ -3,4 +3,7 @@ CREATE="create"
 UPDATE="update"
 DELETE="delete"
 FILE_OPS=[CREATE, UPDATE, DELETE]
+NETWORK="network connection"
 LOGFILE_PATH="logs/activity.csv"
+NETWORKLOG_PATH="./logs/network.txt"
+TEST_NETWORKLOG_PATH="spec/concerns/network.txt"
