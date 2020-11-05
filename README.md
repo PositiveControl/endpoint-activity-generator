@@ -13,9 +13,15 @@ The only dependencies outside of Ruby's Standard Library are:
 1. RSpec for testing
 2. Rake for executing tasks
 
+## How it works
+`eag.rb` is our program's ingress.  We initialize the `EAG` class with a path (or URL) and use Ruby's `Etc` library to get the system user's username. Each function in `EAG` (see `rake` commands below) assigns instance variables that store datum about the activity taking place.  These instance variables are used for creating a command string that is passed to Ruby's `Open3` library for execution in the terminal; as well as logging the activity later in the process.  Once a command is executed by `Open3.popen2` (all activities are ultimately executed by this method) the `stdin`, `stdout`, and `thread` are returned to `EAG#execute` method which allows us to gather more information about the process (e.g. `thread` gives us the `pid`) that we use to assign the remaining instance variables.  Once the process is complete and we've assigned all the instance variables, we utilize the `ActivityLogger` module to turn those variables into log entries.  The log entries are output into a `csv` file located at `logs/activity.csv`.
+
+The only function that differs slightly is `EAG#connect` for initiating a network connection.  While it follows the same flow as above, it additionally stores the verbose output from `curl` in a file (`logs/network.txt`) that is parsed by the `CurlParser` class to provide additional information about the network activity for logging purposes.
+
+
 ## Setup
 1. `bundle install`
-2. `rspec spec` (optional, run the tests)
+2. `rspec spec` (should be run before using `rake` commands)
 
 ## Execution
 1. From terminal using Rake (commands covered below)
@@ -29,6 +35,18 @@ Example:  `rake task_name["arg1","arg2","arg3"]`
 ## Two major gotchas for providing Rake with arguments
 1. No spaces after commas. e.g. ["1","2","3"] NOT ["1", "2", "3"]
 2. If using `zsh`, you must escape the brackets with \\. e.g. `rake start_process\["path/to/exec/"\]`
+
+## end_to_end
+Takes zero parameters
+* Runs each of the below tasks in succession
+  * start_process
+  * create_file
+  * update_file
+  * delete_file
+  * connect
+* Opens /logs directory when finished
+
+Example: `rake end_to_end`
 
 ## start_process
 Takes either:
@@ -67,14 +85,6 @@ Takes one parameter
  * really you can send it anything you'd normally send `curl` such as flags
 
 Example: `rake connect["https://www.google.com"]`
-
-
-## end_to_end
-Takes zero parameters
-* Runs each of the previous tasks in succession
-* Opens /logs directory when finished
-
-Example: `rake end_to_end`
 
 # Known issues
 * Process name will be whatever is executing the program (e.g. RSpec, Rake, IRB)
