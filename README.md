@@ -80,3 +80,4 @@ Example: `rake end_to_end`
 * Process name will be whatever is executing the program (e.g. RSpec, Rake, IRB)
 * I wasn't sure if the PID should be from what is doing the executing (e.g. Rake, IRB) or what is being executued (e.g. Calculator.app). So the PID belongs to what is being executed (e.g. Calculutor.app)
 * Network activity was by far the most difficult portion for me, as such, the source address (but not port) and protocol are hardcoded.  The network portion is the most brittle part of the application.
+* Has not been tested on, nor do I think it will work on Windows.
