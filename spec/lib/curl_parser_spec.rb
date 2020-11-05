@@ -1,6 +1,5 @@
 require './lib/constants'
 require './lib/curl_parser'
-require 'pry'
 
 RSpec.describe CurlParser do
   context 'parsing curl output' do
